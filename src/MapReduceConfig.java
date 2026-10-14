@@ -1,6 +1,3 @@
-package config;
-
-import gradingTools.comp533s19.assignment0.AMapReduceTracer;
 import gradingTools.comp533s21.assignment1.interfaces.MapReduceConfiguration;
 
 public class MapReduceConfig implements MapReduceConfiguration {
@@ -23,7 +20,6 @@ public class MapReduceConfig implements MapReduceConfiguration {
     public Class getViewClass() {
         return null;
     }
-AMapReduceTracer
     @Override
     public Class getControllerClass() {
         return null;
