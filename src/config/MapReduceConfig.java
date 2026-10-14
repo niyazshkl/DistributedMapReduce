@@ -1,4 +1,10 @@
+package config;
+
 import gradingTools.comp533s21.assignment1.interfaces.MapReduceConfiguration;
+import mvc.controller.TokenCounterController;
+import mvc.model.TokenCounterModel;
+import mvc.view.TokenCounterView;
+import standalone.StandAloneTokenCounter;
 
 public class MapReduceConfig implements MapReduceConfiguration {
     @Override
@@ -13,16 +19,16 @@ public class MapReduceConfig implements MapReduceConfiguration {
 
     @Override
     public Class getModelClass() {
-        return null;
+        return TokenCounterModel.class;
     }
 
     @Override
     public Class getViewClass() {
-        return null;
+        return TokenCounterView.class;
     }
     @Override
     public Class getControllerClass() {
-        return null;
+        return TokenCounterController.class;
     }
 
     @Override

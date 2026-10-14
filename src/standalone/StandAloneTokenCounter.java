@@ -1,3 +1,5 @@
+package standalone;
+
 import gradingTools.comp533s19.assignment0.AMapReduceTracer;
 
 import java.util.Arrays;
