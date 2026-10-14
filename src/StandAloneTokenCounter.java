@@ -1,13 +1,15 @@
+import gradingTools.comp533s19.assignment0.AMapReduceTracer;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
-public class StandAloneTokenCounter {
-    public static void main (){
+public class StandAloneTokenCounter extends AMapReduceTracer {
+    public void demo (){
         Scanner scanner = new Scanner(System.in);
         while(true) {
-            System.out.println("Please enter quit or a line of tokens to be processed by spaces");
+            traceNumbersPrompt();
             String inputString = scanner.nextLine();
             if (inputString.toLowerCase().equals("quit")) break;
             String[] inputArray = inputString.split("\\s+");
