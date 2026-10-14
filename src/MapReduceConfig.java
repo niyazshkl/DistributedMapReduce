@@ -3,7 +3,7 @@ import gradingTools.comp533s21.assignment1.interfaces.MapReduceConfiguration;
 public class MapReduceConfig implements MapReduceConfiguration {
     @Override
     public Class getStandAloneTokenCounter() {
-        return null;
+        return StandAloneTokenCounter.class;
     }
 
     @Override
