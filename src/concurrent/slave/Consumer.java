@@ -69,10 +69,11 @@ public class Consumer extends AMapReduceTracer implements Slave{
                     privateStorage.add(eaten);
                 }
             } catch (InterruptedException e) {
-                e.printStackTrace();
-                throw new RuntimeException(e);
+//                e.printStackTrace();
+                break;
             }
         }
+        traceQuit();
     }
 
     private Map partialReducation(){
@@ -88,7 +89,9 @@ public class Consumer extends AMapReduceTracer implements Slave{
     public void notifySlave() {
         //called by master to unblock the sleeping slave
         if (firstTime) firstTime=false;
-        else this.notify();
+        else synchronized (this){
+            this.notify();
+        }
         traceNotify();
     }
 

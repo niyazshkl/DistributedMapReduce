@@ -23,7 +23,6 @@ public class SlaveBarrier extends AMapReduceTracer implements Barrier {
 //                count--;
                 leave();
                 traceBarrierWaitEnd(this, target, count);
-                if (exit==target) count = 0;
                 return;
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -38,6 +37,7 @@ public class SlaveBarrier extends AMapReduceTracer implements Barrier {
     private synchronized void leave(){
         exit++;
         count--;
+        if (exit==target) count = 0; //only the last thread should reset count
     }
 
     @Override

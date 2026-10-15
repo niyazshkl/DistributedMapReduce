@@ -9,6 +9,8 @@ public interface TokenCounterModelInterface {
     String getInputString();
     void setNumThreads(int numThreads);
 
+    void terminate();
+
     void setInputString(String inputString);
     void addPropertyChangeListener(PropertyChangeListener listener);
 }

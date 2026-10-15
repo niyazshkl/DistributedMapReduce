@@ -20,18 +20,19 @@ public class TokenCounterController extends AMapReduceTracer implements TokenCou
     @Override
     public void control(){
         Scanner scanner = new Scanner(System.in);
+        traceThreadPrompt();
+        int numThreads = scanner.nextInt();
+        scanner.nextLine();
+        this.tokenCounterModelInterface.setNumThreads(numThreads);
         while (true)
         {
-            traceThreadPrompt();
-            int numThreads = scanner.nextInt();
-            scanner.nextLine();
-            this.tokenCounterModelInterface.setNumThreads(numThreads);
             traceNumbersPrompt();
             String inputString = scanner.nextLine();
             if (inputString.toLowerCase().equals("quit")) break;
             handle(inputString);
         }
-        System.out.println("Thank you for your time");
+        this.tokenCounterModelInterface.terminate();
+        traceQuit();
     }
 
     @Override

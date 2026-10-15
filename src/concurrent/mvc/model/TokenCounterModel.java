@@ -7,7 +7,6 @@ import concurrent.joiner.TokenJoiner;
 import concurrent.mapreduce.keyvalue.KeyVal;
 import concurrent.mapreduce.keyvalue.KeyValue;
 import concurrent.mapreduce.map.MapperFactory;
-import concurrent.mapreduce.reduce.ReducerFactory;
 import concurrent.slave.Consumer;
 import concurrent.slave.Slave;
 import gradingTools.comp533s19.assignment0.AMapReduceTracer;
@@ -90,8 +89,10 @@ public class TokenCounterModel extends PropertyChangeSupport implements TokenCou
         this.ReductionQueueList.stream().forEach((lList->lList.clear()));
         this.KeyValueQueue.clear();
     }
-
-
+    @Override
+    public void terminate(){
+        threads.forEach(Thread::interrupt);
+    }
     @Override
     public void setInputString(String inputString) {
         firePropertyChange(
