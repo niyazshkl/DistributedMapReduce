@@ -1,5 +1,6 @@
 package config;
 
+import concurrent.slave.Consumer;
 import gradingTools.comp533s21.assignment1.interfaces.MapReduceConfiguration;
 import mapreduce.map.MapperFactory;
 import mapreduce.map.TokenCountingMapper;
@@ -107,7 +108,7 @@ public class MapReduceConfig implements MapReduceConfiguration {
 
     @Override
     public Class getSlaveClass() {
-        return null;
+        return Consumer.class;
     }
 
     @Override

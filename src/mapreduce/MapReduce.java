@@ -10,25 +10,23 @@ import mapreduce.model.TokenCounterModelInterface;
 import mapreduce.view.TokenCounterView;
 import mapreduce.view.TokenCounterViewInterface;
 
-import java.beans.PropertyChangeSupport;
-
 public class MapReduce extends AMapReduceTracer {
-    public void demo() {
-
-        MapperFactory.setMapper(new IntSummingMapper()); //this is what makes it IntSummingMapReduce.
-
+    public void intSummingMapReduceDemo() {
+        //Only 1 extra line of code for IntSummingMapReduce.
+        MapperFactory.setMapper(new IntSummingMapper());
         // Otherwise, behaves exactly like TokenCountingMapReduce
+        tokenCountingMapReduceDemo();
+    }
 
-        PropertyChangeSupport tokenCounterModel = new TokenCounterModel("hi");
+    public void tokenCountingMapReduceDemo(){
+        TokenCounterModelInterface tokenCounterModel = new TokenCounterModel("hi");
         TokenCounterViewInterface tokenCounterView = new TokenCounterView();
 
         tokenCounterModel.addPropertyChangeListener(tokenCounterView);
 
-        TokenCounterControllerInterface counterController = new TokenCounterController( (TokenCounterModelInterface) tokenCounterModel);
+        TokenCounterControllerInterface counterController = new TokenCounterController(tokenCounterModel);
 
         counterController.control();
     }
-
-
 
 }

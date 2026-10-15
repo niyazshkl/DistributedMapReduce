@@ -1,5 +1,4 @@
-import mapreduce.MapReduce;
-import mvc.MVCTokenCounter;
+import concurrent.ConcurrentMapReduce;
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
@@ -10,7 +9,8 @@ public class Main {
 
 //        new MVCTokenCounter().demo();
 
-        new MapReduce().demo();
+//        new MapReduce().tokenCountingMapReduceDemo();
+        new ConcurrentMapReduce().demo();
 
     }
 }
