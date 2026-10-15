@@ -17,7 +17,6 @@ public class TokenJoiner extends AMapReduceTracer implements Joiner{
             try {
                 traceJoinerWaitStart(this, this.numThreads, this.finishedThreads);
                 wait();
-                finishedThreads--;
                 traceJoinerWaitEnd(this, this.numThreads, this.finishedThreads);
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -25,6 +24,7 @@ public class TokenJoiner extends AMapReduceTracer implements Joiner{
             }
         }
         notifyAll();
+        finishedThreads = 0;
         traceJoinerRelease(this, this.numThreads, this.finishedThreads);
     }
 
