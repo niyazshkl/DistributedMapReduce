@@ -14,7 +14,8 @@ public class TokenCountingReducer extends AMapReduceTracer implements Reducer<St
         Map<String,Integer> reducedMap = new HashMap<>();
         givenList.stream().forEach(
                 (kv) ->{
-                    reducedMap.put(kv.getKey(), reducedMap.getOrDefault(kv.getKey(), 0)+1);
+                    if (reducedMap.get(kv.getKey())==null) reducedMap.put(kv.getKey(), 1);
+                    else reducedMap.put(kv.getKey(),reducedMap.get(kv.getKey()) + kv.getValue());
 
                 }
         );

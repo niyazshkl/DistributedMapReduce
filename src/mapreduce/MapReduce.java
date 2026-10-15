@@ -3,6 +3,8 @@ package mapreduce;
 import gradingTools.comp533s19.assignment0.AMapReduceTracer;
 import mapreduce.controller.TokenCounterController;
 import mapreduce.controller.TokenCounterControllerInterface;
+import mapreduce.map.IntSummingMapper;
+import mapreduce.map.MapperFactory;
 import mapreduce.model.TokenCounterModel;
 import mapreduce.model.TokenCounterModelInterface;
 import mapreduce.view.TokenCounterView;
@@ -13,13 +15,20 @@ import java.beans.PropertyChangeSupport;
 public class MapReduce extends AMapReduceTracer {
     public void demo() {
 
-    PropertyChangeSupport tokenCounterModel = new TokenCounterModel("hi");
-    TokenCounterViewInterface tokenCounterView = new TokenCounterView();
+        MapperFactory.setMapper(new IntSummingMapper()); //this is what makes it IntSummingMapReduce.
 
-    tokenCounterModel.addPropertyChangeListener(tokenCounterView);
+        // Otherwise, behaves exactly like TokenCountingMapReduce
 
-    TokenCounterControllerInterface counterController = new TokenCounterController( (TokenCounterModelInterface) tokenCounterModel);
+        PropertyChangeSupport tokenCounterModel = new TokenCounterModel("hi");
+        TokenCounterViewInterface tokenCounterView = new TokenCounterView();
 
-    counterController.control();
+        tokenCounterModel.addPropertyChangeListener(tokenCounterView);
+
+        TokenCounterControllerInterface counterController = new TokenCounterController( (TokenCounterModelInterface) tokenCounterModel);
+
+        counterController.control();
     }
+
+
+
 }
