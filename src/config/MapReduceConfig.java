@@ -1,6 +1,10 @@
 package config;
 
 import gradingTools.comp533s21.assignment1.interfaces.MapReduceConfiguration;
+import mapreduce.map.MapperFactory;
+import mapreduce.map.TokenCountingMapper;
+import mapreduce.reduce.ReducerFactory;
+import mapreduce.reduce.TokenCountingReducer;
 import mvc.controller.TokenCounterController;
 import mvc.model.TokenCounterModel;
 import mvc.view.TokenCounterView;
@@ -33,12 +37,12 @@ public class MapReduceConfig implements MapReduceConfiguration {
 
     @Override
     public Class getMapperFactory() {
-        return null;
+        return MapperFactory.class;
     }
 
     @Override
     public Class getReducerFactory() {
-        return null;
+        return ReducerFactory.class;
     }
 
     @Override
@@ -48,7 +52,7 @@ public class MapReduceConfig implements MapReduceConfiguration {
 
     @Override
     public Class getTokenCountingMapperClass() {
-        return null;
+        return TokenCountingMapper.class;
     }
 
     @Override
@@ -58,12 +62,12 @@ public class MapReduceConfig implements MapReduceConfiguration {
 
     @Override
     public Class getReducerClass() {
-        return null;
+        return TokenCountingReducer.class;
     }
 
     @Override
     public Object getTokenCountingMapper() {
-        return null;
+        return new TokenCountingMapper();
     }
 
     @Override
@@ -73,7 +77,7 @@ public class MapReduceConfig implements MapReduceConfiguration {
 
     @Override
     public Object getReducer() {
-        return null;
+        return new TokenCountingReducer();
     }
 
     @Override

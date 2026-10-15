@@ -1,3 +1,4 @@
+import mapreduce.MapReduce;
 import mvc.MVCTokenCounter;
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
@@ -7,7 +8,9 @@ public class Main {
 
 //        new standalone.StandAloneTokenCounter().demo();
 
-        new MVCTokenCounter().demo();
+//        new MVCTokenCounter().demo();
+
+        new MapReduce().demo();
 
     }
 }
