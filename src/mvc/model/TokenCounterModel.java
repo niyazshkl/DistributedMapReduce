@@ -3,6 +3,8 @@ package mvc.model;
 import gradingTools.comp533s19.assignment0.AMapReduceTracer;
 
 import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeListenerProxy;
 import java.beans.PropertyChangeSupport;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -11,7 +13,6 @@ import java.util.Map;
 public class TokenCounterModel extends PropertyChangeSupport implements TokenCounterModelInterface {
     private String inputString;
     private Map<String,Integer> result;
-    private PropertyChangeSupport propertyChangeSupport;
 
     /**
      * Constructs a {@code PropertyChangeSupport} object.
@@ -22,6 +23,22 @@ public class TokenCounterModel extends PropertyChangeSupport implements TokenCou
         super(sourceBean);
         inputString = new String();
         result = new HashMap<>();
+    }
+
+    @Override
+    /**
+     * I (Niyaz) came up with a smart idea to make the wiring up of MVC much better in the demo! Rest is copy from parent docs
+     * Add a PropertyChangeListener to the listener list.
+     * The listener is registered for all properties.
+     * The same listener object may be added more than once, and will be called
+     * as many times as it is added.
+     * If {@code listener} is null, no exception is thrown and no action
+     * is taken.
+     *
+     * @param listener  The PropertyChangeListener to be added
+     */
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        super.addPropertyChangeListener(listener);
     }
 
 
