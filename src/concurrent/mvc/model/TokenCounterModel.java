@@ -1,11 +1,14 @@
 package concurrent.mvc.model;
 
+import concurrent.barrier.Barrier;
+import concurrent.barrier.SlaveBarrier;
 import concurrent.mapreduce.keyvalue.KeyValue;
 import concurrent.mapreduce.map.MapperFactory;
 import concurrent.mapreduce.reduce.ReducerFactory;
 import concurrent.slave.Consumer;
 import concurrent.slave.Slave;
 import gradingTools.comp533s19.assignment0.AMapReduceTracer;
+import util.misc.ThreadSupport;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -17,6 +20,7 @@ public class TokenCounterModel extends PropertyChangeSupport implements TokenCou
     private Map<String,Integer> result;
     private int NumThreads;
     private List<Thread> threads;
+    private Barrier barrier;
 
     public int getNumThreads() {
         return NumThreads;
@@ -28,7 +32,17 @@ public class TokenCounterModel extends PropertyChangeSupport implements TokenCou
         firePropertyChange(propertyChangeEvent);
         NumThreads = numThreads;
         createThreads();
+        createBarrier();
     }
+
+    private void createBarrier() {
+        barrier = new SlaveBarrier(NumThreads);
+        // I need to use AMapReduceTracer.traceBarrierCreated,
+        // but I can't figure the right inheritence solution
+        traceBarrierCreated(barrier, NumThreads);
+    }
+
+
 
     private void createThreads(){
         threads = new ArrayList<>();
@@ -41,7 +55,6 @@ public class TokenCounterModel extends PropertyChangeSupport implements TokenCou
         PropertyChangeEvent propertyChangeEvent =
             new PropertyChangeEvent(this, "Threads", null, threads);
         firePropertyChange(propertyChangeEvent);
-
     }
 
     public List<Thread> getThreads() {
@@ -103,6 +116,18 @@ public class TokenCounterModel extends PropertyChangeSupport implements TokenCou
     @Override
     public String toString() {
         return AMapReduceTracer.MODEL;
+    }
+
+    protected void traceBarrierCreated(Object aBarrier, int aNumThreads) {
+        this.trace("Barrier Created:" + aBarrier + ":" + aNumThreads);
+    }
+    protected String toPrefix() {
+        return Thread.currentThread() + ":" + this + ":";
+    }
+    protected void trace(String aSuffix) {
+        System.out.println(this.toPrefix() + aSuffix);
+        System.out.flush();
+        ThreadSupport.sleep(100L);
     }
 
     }

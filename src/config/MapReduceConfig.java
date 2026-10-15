@@ -1,5 +1,6 @@
 package config;
 
+import concurrent.barrier.SlaveBarrier;
 import concurrent.partition.PartitionerFactory;
 import concurrent.partition.TokenPartitioner;
 import concurrent.slave.Consumer;
@@ -105,7 +106,7 @@ public class MapReduceConfig implements MapReduceConfiguration {
 
     @Override
     public Class getBarrierClass() {
-        return null;
+        return SlaveBarrier.class;
     }
 
     @Override
@@ -115,7 +116,7 @@ public class MapReduceConfig implements MapReduceConfiguration {
 
     @Override
     public Object getBarrier(int i) {
-        return null;
+        return new SlaveBarrier(i);
     }
 
     @Override
