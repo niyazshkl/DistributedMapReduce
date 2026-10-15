@@ -1,14 +1,16 @@
 package config;
 
+import concurrent.partition.PartitionerFactory;
+import concurrent.partition.TokenPartitioner;
 import concurrent.slave.Consumer;
 import gradingTools.comp533s21.assignment1.interfaces.MapReduceConfiguration;
-import mapreduce.map.MapperFactory;
-import mapreduce.map.TokenCountingMapper;
-import mapreduce.reduce.ReducerFactory;
-import mapreduce.reduce.TokenCountingReducer;
-import mvc.controller.TokenCounterController;
-import mvc.model.TokenCounterModel;
-import mvc.view.TokenCounterView;
+import concurrent.mapreduce.map.MapperFactory;
+import concurrent.mapreduce.map.TokenCountingMapper;
+import concurrent.mapreduce.reduce.ReducerFactory;
+import concurrent.mapreduce.reduce.TokenCountingReducer;
+import concurrent.mvc.controller.TokenCounterController;
+import concurrent.mvc.model.TokenCounterModel;
+import concurrent.mvc.view.TokenCounterView;
 import standalone.StandAloneTokenCounter;
 
 public class MapReduceConfig implements MapReduceConfiguration {
@@ -83,17 +85,17 @@ public class MapReduceConfig implements MapReduceConfiguration {
 
     @Override
     public Class getPartitionerClass() {
-        return null;
+        return TokenPartitioner.class;
     }
 
     @Override
     public Class getPartitionerFactory() {
-        return null;
+        return PartitionerFactory.class;
     }
 
     @Override
     public Object getPartitioner() {
-        return null;
+        return PartitionerFactory.getPartitioner();
     }
 
     @Override
