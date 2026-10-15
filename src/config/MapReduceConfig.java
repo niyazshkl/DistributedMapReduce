@@ -1,6 +1,7 @@
 package config;
 
 import concurrent.barrier.SlaveBarrier;
+import concurrent.joiner.TokenJoiner;
 import concurrent.partition.PartitionerFactory;
 import concurrent.partition.TokenPartitioner;
 import concurrent.slave.Consumer;
@@ -101,7 +102,7 @@ public class MapReduceConfig implements MapReduceConfiguration {
 
     @Override
     public Class getJoinerClass() {
-        return null;
+        return TokenJoiner.class;
     }
 
     @Override
@@ -121,7 +122,7 @@ public class MapReduceConfig implements MapReduceConfiguration {
 
     @Override
     public Object getJoiner(int i) {
-        return null;
+        return new TokenJoiner(i);
     }
 
     @Override
