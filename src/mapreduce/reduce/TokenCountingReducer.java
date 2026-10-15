@@ -1,7 +1,7 @@
 package mapreduce.reduce;
 
 import gradingTools.comp533s19.assignment0.AMapReduceTracer;
-import mapreduce.keyvalue.KeyValue;
+import concurrent.mapreduce.keyvalue.KeyValue;
 
 import java.util.HashMap;
 import java.util.List;

@@ -3,6 +3,7 @@ package concurrent.mvc.model;
 import concurrent.barrier.Barrier;
 import concurrent.barrier.SlaveBarrier;
 import concurrent.joiner.Joiner;
+import concurrent.joiner.TokenJoiner;
 import concurrent.mapreduce.keyvalue.KeyVal;
 import concurrent.mapreduce.keyvalue.KeyValue;
 import concurrent.mapreduce.map.MapperFactory;
@@ -23,26 +24,13 @@ public class TokenCounterModel extends PropertyChangeSupport implements TokenCou
     private String inputString;
     private Map<String,Integer> result;
     private int NumThreads;
+    private List<Slave> slaves = new ArrayList<>();
     private List<Thread> threads;
     private final int BUFFER_SIZE = 2; // got from AMapReduceTracer
     private BlockingQueue<KeyValue<String, Integer>> KeyValueQueue = new ArrayBlockingQueue(BUFFER_SIZE); //bounded buffer -> shared data
-    private List<LinkedList<KeyValue<String,Integer>>> ReductionQueueList = new ArrayList(); //LinkedList are non-blocking queue
+    private List<LinkedList<KeyValue<String,Integer>>> ReductionQueueList = new ArrayList(NumThreads); //LinkedList are non-blocking queue
     private Joiner joiner;
     private Barrier barrier;
-
-    public int getNumThreads() {
-        return NumThreads;
-    }
-
-    public void setNumThreads(int numThreads) {
-        PropertyChangeEvent propertyChangeEvent =
-            new PropertyChangeEvent(this, "NumThreads", null, numThreads);
-        firePropertyChange(propertyChangeEvent);
-        NumThreads = numThreads;
-        createThreads();
-        createBarrier();
-        startThreads();
-    }
 
     private void createBarrier() {
         barrier = new SlaveBarrier(NumThreads);
@@ -50,7 +38,6 @@ public class TokenCounterModel extends PropertyChangeSupport implements TokenCou
         // but I can't figure the right inheritence solution
         traceBarrierCreated(barrier, NumThreads);
     }
-    private List<Slave> slaves = new ArrayList<>();
 
 
     private void createThreads(){
@@ -66,13 +53,8 @@ public class TokenCounterModel extends PropertyChangeSupport implements TokenCou
             new PropertyChangeEvent(this, "Threads", null, threads);
         firePropertyChange(propertyChangeEvent);
     }
-    private void startThreads(){
-        threads.forEach(Thread::start);
-    }
 
-    public List<Thread> getThreads() {
-        return threads;
-    }
+
 
     /**
      * Constructs a {@code PropertyChangeSupport} object.
@@ -83,6 +65,100 @@ public class TokenCounterModel extends PropertyChangeSupport implements TokenCou
         super(sourceBean);
         inputString = null;
         result = new HashMap<>();
+    }
+
+    public void notifySlaves(){
+        slaves.forEach(Slave::notifySlave);
+    }
+
+    public void setNumThreads(int numThreads) {
+        PropertyChangeEvent propertyChangeEvent =
+                new PropertyChangeEvent(this, "NumThreads", null, numThreads);
+        firePropertyChange(propertyChangeEvent);
+        NumThreads = numThreads;
+        for (int i =0; i<NumThreads; i++){
+            ReductionQueueList.add(new LinkedList<KeyValue<String,Integer>>());
+        }
+        resetForRound();
+        createThreads();
+        createBarrier();
+        createJoiner();
+        startThreads();
+    }
+    public void resetForRound(){
+        this.result.clear();
+        this.ReductionQueueList.stream().forEach((lList->lList.clear()));
+        this.KeyValueQueue.clear();
+    }
+
+
+    @Override
+    public void setInputString(String inputString) {
+        firePropertyChange(
+                new PropertyChangeEvent(this, "InputString", this.inputString, inputString)
+        );
+        notifySlaves();
+        this.inputString = inputString;
+        String[] inputArray = inputString.split("\\s+");
+        //Map & Reduce
+        List<KeyVal> mappedResults = MapperFactory.getMapper().map(Arrays.asList(inputArray));
+
+        for (KeyValue keyValue : mappedResults) {
+            try {
+                traceEnqueueRequest(keyValue);
+                KeyValueQueue.put(keyValue);
+                traceEnqueue(KeyValueQueue);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                throw new RuntimeException(e);
+            }
+        }
+
+        for (int i=0; i<this.NumThreads; i++) {
+            try {
+                KeyVal keyValue = new KeyVal(null, null);
+                traceEnqueueRequest(keyValue);
+                KeyValueQueue.put(keyValue);
+                traceEnqueue(KeyValueQueue);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        joiner.join(); //main waits until the slaves have fully finished
+
+        //should read the private value of the storage instead!
+        for (Slave slave:slaves){
+            slave.getPrivateStorage().forEach(a ->result.put(a.getKey(), a.getValue()));
+        }
+
+//        ReductionQueueList.forEach(l->l.forEach(a->result.put(a.getKey(), a.getValue())));
+//        System.out.println("COMING ALL BACK!");
+//        result = ReducerFactory.getReducer().reduce(mappedResults);
+        traceAddedToMap(null, result);
+
+        firePropertyChange( new PropertyChangeEvent(this,"result", null, result));
+
+        resetForRound();
+    }
+    public Barrier getBarrier() {
+        return barrier;
+    }
+
+    public List<LinkedList<KeyValue<String, Integer>>> getReductionQueueList() {
+        return ReductionQueueList;
+    }
+
+    public void setReductionQueueList(List<LinkedList<KeyValue<String, Integer>>> reductionQueueList) {
+        ReductionQueueList = reductionQueueList;
+    }
+
+    public BlockingQueue<KeyValue<String, Integer>> getKeyValueQueue() {
+        return KeyValueQueue;
+    }
+
+    public int getNumThreads() {
+        return NumThreads;
     }
 
     @Override
@@ -106,64 +182,24 @@ public class TokenCounterModel extends PropertyChangeSupport implements TokenCou
     public Map<String, Integer> getResult() {
         return result;
     }
+    private void startThreads(){
+        threads.forEach(Thread::start);
+    }
 
+    public List<Thread> getThreads() {
+        return threads;
+    }
     @Override
     public String getInputString() {
         return inputString;
     }
-
-    public void resetForRound(){
-        this.result.clear();
-        this.ReductionQueueList.clear();
-        this.KeyValueQueue.clear();
+    protected void traceAddedToMap(Object anOriginalMap, Object aReducedMap) { //From AMapReduceTracer.class
+        this.trace("Added to Final Map:" + anOriginalMap + ":" + aReducedMap);
     }
-
-    public void notifySlaves(){
-        slaves.forEach(Slave::notifySlave);
-    }
-
     @Override
-    public void setInputString(String inputString) {
-        firePropertyChange(
-                new PropertyChangeEvent(this, "InputString", this.inputString, inputString)
-        );
-        resetForRound();
-        notifySlaves();
-        this.inputString = inputString;
-        String[] inputArray = inputString.split("\\s+");
-        //Map & Reduce
-        List<KeyVal> mappedResults = MapperFactory.getMapper().map(Arrays.asList(inputArray));
-
-        mappedResults.forEach(keyValue -> {
-            try {
-                traceEnqueueRequest(keyValue);
-                KeyValueQueue.put(keyValue);
-                traceEnqueue(KeyValueQueue);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-                throw new RuntimeException(e);
-            }
-
-        });
-
-        for (int i=0; i<this.NumThreads; i++) {
-            try {
-                KeyValueQueue.put(new KeyVal(null, null));
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        joiner.join(); //main waits until the slaves have fully finished
-
-        ReductionQueueList.forEach(l->result.put(l.element().getKey(), l.element().getValue()));
-
-        result = ReducerFactory.getReducer().reduce(mappedResults);
-        traceAddedToMap(null, result);
-
-        firePropertyChange( new PropertyChangeEvent(this,"result", null, result));
+    public String toString() {
+        return AMapReduceTracer.MODEL;
     }
-
     private String ENQUEUE = "enqueue:";
     protected void traceEnqueueRequest(Object anElement) {
         this.trace(ENQUEUE + anElement);
@@ -171,14 +207,6 @@ public class TokenCounterModel extends PropertyChangeSupport implements TokenCou
 
     protected void traceEnqueue(Object aQueue) {
         this.trace(ENQUEUE + aQueue);
-    }
-
-    protected void traceAddedToMap(Object anOriginalMap, Object aReducedMap) { //From AMapReduceTracer.class
-        this.trace("Added to Final Map:" + anOriginalMap + ":" + aReducedMap);
-    }
-    @Override
-    public String toString() {
-        return AMapReduceTracer.MODEL;
     }
 
     protected void traceBarrierCreated(Object aBarrier, int aNumThreads) {
@@ -191,6 +219,16 @@ public class TokenCounterModel extends PropertyChangeSupport implements TokenCou
         System.out.println(this.toPrefix() + aSuffix);
         System.out.flush();
         ThreadSupport.sleep(100L);
+    }
+    public Joiner getJoiner() {
+        return joiner;
+    }
+    protected void traceJoinerCreated(Object aJoiner, int aNumThreads) {
+        this.trace("Joiner Created:" + aJoiner + ":" + aNumThreads);
+    }
+    private void createJoiner(){
+        joiner = new TokenJoiner(NumThreads);
+        traceJoinerCreated(joiner, NumThreads);
     }
 
     }

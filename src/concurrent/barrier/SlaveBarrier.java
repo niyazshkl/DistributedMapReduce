@@ -3,31 +3,41 @@ package concurrent.barrier;
 import gradingTools.comp533s19.assignment0.AMapReduceTracer;
 
 public class SlaveBarrier extends AMapReduceTracer implements Barrier {
+    int target;
     int count;
-    int now;
+    int exit;
 
-    public SlaveBarrier(int count) {
-        this.count = count;
-        this.now = 0;
+    public SlaveBarrier(int target) {
+        this.target = target;
+        this.count = 0;
+        this.exit = 0;
     }
 
     @Override //multi-threads will call this so need to prevent concurrency issues
     public synchronized void barrier() {
-        while(now<count){
+        count++;
+        while(count < target){ //why we need while?
             try {
-                now++;
-                traceBarrierWaitStart(this, count, now);
+                traceBarrierWaitStart(this, target, count);
                 wait();
-                now--;
-                traceBarrierWaitEnd(this, count, now);
+//                count--;
+                leave();
+                traceBarrierWaitEnd(this, target, count);
+                if (exit==target) count = 0;
+                return;
             } catch (InterruptedException e) {
                 e.printStackTrace();
                 throw new RuntimeException(e);
             }
         }
-//        now = 0;
+        exit = 1;
         notifyAll();
-        traceBarrierReleaseAll(this, count, now);
+        traceBarrierReleaseAll(this, target, count);
+    }
+
+    private synchronized void leave(){
+        exit++;
+        count--;
     }
 
     @Override
