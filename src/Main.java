@@ -5,11 +5,6 @@ import concurrent.ConcurrentMapReduce;
 public class Main {
     public static void main(String[] args) {
 
-//        new standalone.StandAloneTokenCounter().demo();
-
-//        new MVCTokenCounter().demo();
-
-//        new MapReduce().tokenCountingMapReduceDemo();
         new ConcurrentMapReduce().demo();
 
     }
