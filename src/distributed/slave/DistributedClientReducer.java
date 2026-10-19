@@ -7,7 +7,7 @@ import gradingTools.comp533s19.assignment0.AMapReduceTracer;
 import java.util.List;
 import java.util.Map;
 
-public class ClientReducer extends AMapReduceTracer implements ClientProxy,ClientLocal{
+public class DistributedClientReducer extends AMapReduceTracer implements DistributedClient, Client {
     @Override
     public Map<String, Integer> reduce(List<KeyValue<String, Integer>> givenList) {
         traceRemoteList(givenList);

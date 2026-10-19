@@ -17,10 +17,10 @@ import java.util.concurrent.BlockingQueue;
 public class Consumer extends AMapReduceTracer implements Slave{
     private int slaveNumber;
     private TokenCounterModel tokenCounterModel;
-    private ClientProxy clientProxy;
+    private DistributedClient distributedClient;
     @Override
-    public void setClientProxy(ClientProxy clientProxy) {
-        this.clientProxy = clientProxy;
+    public void setClientProxy(DistributedClient distributedClient) {
+        this.distributedClient = distributedClient;
     }
 
     @Override
@@ -84,9 +84,9 @@ public class Consumer extends AMapReduceTracer implements Slave{
             }
         }
         traceQuit();
-        if (clientProxy==null) return;
+        if (distributedClient ==null) return;
         try {
-            clientProxy.quit();
+            distributedClient.quit();
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
@@ -97,11 +97,11 @@ public class Consumer extends AMapReduceTracer implements Slave{
         System.out.print("ABOUT TO REDUCE:");
         traceReduce(this, privateStorage);
         Map result = new HashMap();
-        if (clientProxy==null)
+        if (distributedClient ==null)
             result = ReducerFactory.getReducer().reduce(privateStorage);
         else {
             try {
-               result = clientProxy.reduce(privateStorage);
+               result = distributedClient.reduce(privateStorage);
             } catch (RemoteException e) {
                 throw new RuntimeException(e);
             }
@@ -113,11 +113,11 @@ public class Consumer extends AMapReduceTracer implements Slave{
 
     private Map<String, Integer> fullReducation(){
         Map<String, Integer> result = new HashMap<>();
-        if (clientProxy==null)
+        if (distributedClient ==null)
             result = ReducerFactory.getReducer().reduce(this.tokenCounterModel.getReductionQueueList().get(this.slaveNumber));
         else {
             try {
-                result = clientProxy.reduce(this.tokenCounterModel.getReductionQueueList().get(this.slaveNumber));
+                result = distributedClient.reduce(this.tokenCounterModel.getReductionQueueList().get(this.slaveNumber));
             } catch (RemoteException e) {
                 throw new RuntimeException(e);
             }

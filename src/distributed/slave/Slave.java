@@ -5,7 +5,7 @@ import distributed.mapreduce.keyvalue.KeyValue;
 import java.util.List;
 
 public interface Slave extends Runnable{
-    void setClientProxy(ClientProxy clientProxy);
+    void setClientProxy(DistributedClient distributedClient);
 
     List<KeyValue<String, Integer>> getPrivateStorage();
 

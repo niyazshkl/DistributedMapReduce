@@ -136,8 +136,7 @@ public class TokenCounterModel extends PropertyChangeSupport implements Serializ
         }
 
         ReductionQueueList.forEach(l->l.forEach(a->result.put(a.getKey(), a.getValue())));
-//        System.out.println("COMING ALL BACK!");
-//        result = ReducerFactory.getReducer().reduce(mappedResults);
+
         traceAddedToMap(null, result);
 
         firePropertyChange( new PropertyChangeEvent(this,"result", null, result));
@@ -181,7 +180,6 @@ public class TokenCounterModel extends PropertyChangeSupport implements Serializ
     }
 
 
-    @Override
     public Map<String, Integer> getResult() {
         return result;
     }
@@ -192,7 +190,7 @@ public class TokenCounterModel extends PropertyChangeSupport implements Serializ
     public List<Thread> getThreads() {
         return threads;
     }
-    @Override
+
     public String getInputString() {
         return inputString;
     }

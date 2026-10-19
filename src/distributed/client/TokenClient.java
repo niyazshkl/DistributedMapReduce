@@ -1,9 +1,9 @@
 package distributed.client;
 
-import distributed.mvc.model.RemoteModel;
-import distributed.slave.ClientLocal;
-import distributed.slave.ClientProxy;
-import distributed.slave.ClientReducer;
+import distributed.mvc.model.DistributedModel;
+import distributed.slave.Client;
+import distributed.slave.DistributedClient;
+import distributed.slave.DistributedClientReducer;
 
 import java.rmi.NotBoundException;
 import java.rmi.Remote;
@@ -12,21 +12,21 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
-public class TokenClient extends Client {
+public class TokenClient extends distributed.client.Client {
     public static void main(String[] args) {
         try {
             Registry rmiRegistry = LocateRegistry.getRegistry(SERVER_PORT);
 
             Remote remoteObject = rmiRegistry.lookup(SERVER_OBECT_NAME);
             System.out.println(remoteObject);
-            RemoteModel remoteModel =  (RemoteModel) remoteObject; //Why ClassCastException?
+            DistributedModel distributedModel =  (DistributedModel) remoteObject; //Why ClassCastException?
 //            System.out.println(remoteObject);
 
 
-            ClientLocal clientProxy = new ClientReducer();
+            Client clientProxy = new DistributedClientReducer();
 
-            UnicastRemoteObject.exportObject((ClientProxy) clientProxy, 0);
-            remoteModel.registerClient((ClientProxy) clientProxy);
+            UnicastRemoteObject.exportObject((DistributedClient) clientProxy, 0);
+            distributedModel.registerClient((DistributedClient) clientProxy);
 
             clientProxy.waiting();
 

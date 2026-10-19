@@ -1,5 +1,5 @@
 package distributed.slave;
 
-public interface ClientLocal{
+public interface Client {
     void waiting();
 }

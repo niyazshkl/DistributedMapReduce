@@ -1,6 +1,6 @@
 package distributed.mvc.model;
 
-import distributed.slave.ClientProxy;
+import distributed.slave.DistributedClient;
 import distributed.slave.Consumer;
 import distributed.slave.Slave;
 
@@ -8,22 +8,22 @@ import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.Stack;
 
-public class RemoteTokenCounterModel extends TokenCounterModel implements RemoteModel{
+public class DistributedTokenCounterModel extends TokenCounterModel implements DistributedModel {
     /**
      * Constructs a {@code PropertyChangeSupport} object.
      *
      * @param sourceBean The bean to be given as the source for any events.
      */
-    Stack<ClientProxy> clientProxies;
-    public RemoteTokenCounterModel() {
+    Stack<DistributedClient> clientProxies;
+    public DistributedTokenCounterModel() {
         super("hi");
         clientProxies = new Stack<>();
     }
 
     @Override
-    public void registerClient(ClientProxy clientProxy) {
-        traceRegister(clientProxy);
-        clientProxies.push(clientProxy);
+    public void registerClient(DistributedClient distributedClient) {
+        traceRegister(distributedClient);
+        clientProxies.push(distributedClient);
         match();
     }
     protected void traceRegister(Object aClient) {
@@ -31,14 +31,12 @@ public class RemoteTokenCounterModel extends TokenCounterModel implements Remote
     }
     //matches slaves to clients
     private void match(){
-        System.out.println("in match(): " + " clientProxies: " + clientProxies + " slaves: " +slaves);
         if((clientProxies==null) || (slaves==null)) return;
 
         if (!clientProxies.isEmpty() && !slaves.isEmpty()){
             Slave slave = slaves.pop();
             slave.setClientProxy(clientProxies.pop());
         }
-        System.out.println("after match(): " + " clientProxies: " + clientProxies + " slaves: " +slaves);
     }
     @Override
     protected void createThreads(){
@@ -61,12 +59,6 @@ public class RemoteTokenCounterModel extends TokenCounterModel implements Remote
     protected void startThreads(){
         match();
         threads.forEach(Thread::start);
-    }
-
-    @Override
-    public void terminateRemote(){
-        threads.forEach(Thread::interrupt);
-
     }
 
 }

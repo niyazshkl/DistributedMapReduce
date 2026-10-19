@@ -1,8 +1,8 @@
 package distributed.server;
 
 import distributed.ConcurrentMapReduce;
-import distributed.mvc.model.RemoteModel;
-import distributed.mvc.model.RemoteTokenCounterModel;
+import distributed.mvc.model.DistributedModel;
+import distributed.mvc.model.DistributedTokenCounterModel;
 import distributed.mvc.model.TokenCounterModelInterface;
 
 import java.rmi.Remote;
@@ -16,15 +16,15 @@ public class TokenServer extends Server{
         try {
             Registry rmiRegistry = LocateRegistry.createRegistry(SERVER_PORT);
             //create the object you want to craete proxy of
-            RemoteModel remoteModel = new RemoteTokenCounterModel();
+            DistributedModel distributedModel = new DistributedTokenCounterModel();
 
             // Create proxy -> will create a seperate thread that doesnt end with main thread.
-            UnicastRemoteObject.exportObject((Remote) remoteModel, 0); //random port
+            UnicastRemoteObject.exportObject((Remote) distributedModel, 0); //random port
 
             //Add the proxy to the registry so that we can find get in client
 
-            rmiRegistry.rebind(SERVER_OBJECT_NAME, remoteModel);
-            new ConcurrentMapReduce().demo((TokenCounterModelInterface) remoteModel);
+            rmiRegistry.rebind(SERVER_OBJECT_NAME, distributedModel);
+            new ConcurrentMapReduce().demo((TokenCounterModelInterface) distributedModel);
 
 
             //do i have to add exit here too? I think so?

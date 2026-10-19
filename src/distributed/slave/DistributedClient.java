@@ -8,7 +8,7 @@ import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Map;
 
-public interface ClientProxy extends Remote, Serializable {
+public interface DistributedClient extends Remote, Serializable {
     Map<String, Integer> reduce(List<KeyValue<String,Integer>> givenList) throws RemoteException;
     void quit() throws RemoteException;
 }
