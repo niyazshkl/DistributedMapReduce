@@ -13,8 +13,7 @@ public class TokenCountingMapper extends AMapReduceTracer implements Mapper<Stri
         List<KeyValue<String,Integer>> result = new ArrayList<>();
 
         strings.stream().forEach((string)->{
-            result.add(new KeyVal(string,Integer.valueOf(1)) {
-            });
+            result.add(new KeyVal(string,Integer.valueOf(1)));
         });
 
         traceMap(strings, result);
