@@ -9,7 +9,7 @@ public class TokenPartitioner extends AMapReduceTracer implements Partitioner<St
      * @param value
      * @param numberOfPartitions
      * @return a value in range 0...numberOfPartitions-1 showing where the partition for this <K,V> belongs to
-     * Partioning algorithm defined in Assignemnt2 pdf instructions
+     * Partioning algorithm defined
      * Let p be the number of partitions.
      * Let max partition size, s, be the ceiling of the number of letters divided by the number of partitions,
      *      that is, ceiling ( (‘z’ - ‘a’ + 1) / (double) p).

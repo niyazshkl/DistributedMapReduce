@@ -140,8 +140,6 @@ public class TokenCounterModel extends PropertyChangeSupport implements Serializ
             slave.getPrivateStorage().forEach(a ->result.put(a.getKey(), a.getValue()));
         }
 
-//        ReductionQueueList.forEach(l->l.forEach(a->result.put(a.getKey(), a.getValue())));
-
         traceAddedToMap(null, result);
 
         firePropertyChange( new PropertyChangeEvent(this,"result", null, result));
