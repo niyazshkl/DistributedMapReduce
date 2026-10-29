@@ -91,6 +91,7 @@ public class TokenCounterModel extends PropertyChangeSupport implements Serializ
         this.ReductionQueueList.stream().forEach((lList->lList.clear()));
         this.KeyValueQueue.clear();
     }
+    protected List<Slave> matchedSlaves = new ArrayList<>();
     @Override
     public void terminate(){
         threads.forEach(Thread::interrupt);
@@ -135,7 +136,11 @@ public class TokenCounterModel extends PropertyChangeSupport implements Serializ
             slave.getPrivateStorage().forEach(a ->result.put(a.getKey(), a.getValue()));
         }
 
-        ReductionQueueList.forEach(l->l.forEach(a->result.put(a.getKey(), a.getValue())));
+        for (Slave slave:matchedSlaves){
+            slave.getPrivateStorage().forEach(a ->result.put(a.getKey(), a.getValue()));
+        }
+
+//        ReductionQueueList.forEach(l->l.forEach(a->result.put(a.getKey(), a.getValue())));
 
         traceAddedToMap(null, result);
 

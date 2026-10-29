@@ -6,6 +6,7 @@ import distributed.slave.Slave;
 
 import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
 public class DistributedTokenCounterModel extends TokenCounterModel implements DistributedModel {
@@ -29,12 +30,14 @@ public class DistributedTokenCounterModel extends TokenCounterModel implements D
     protected void traceRegister(Object aClient) {
         this.trace("Register:" + aClient);
     }
+
     //matches slaves to clients
     private void match(){
         if((clientProxies==null) || (slaves==null)) return;
 
         if (!clientProxies.isEmpty() && !slaves.isEmpty()){
             Slave slave = slaves.pop();
+            matchedSlaves.add(slave);
             slave.setClientProxy(clientProxies.pop());
         }
     }
